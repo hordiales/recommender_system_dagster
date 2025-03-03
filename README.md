@@ -10,6 +10,9 @@ First, install your Dagster code location as a Python package. By using the --ed
 pip install -e ".[dev]"
 ```
 
+mkdir dagster_home
+export DAGSTER_HOME=$PWD/dagster_home
+
 Then, start the Dagster UI web server:
 
 ```bash

@@ -8,5 +8,7 @@ export POSTGRES_HOST=localhost:5432
 export MLFLOW_POSTGRES_DB=mlflow_db
 
 export MLFLOW_ARTIFACTS_PATH=$PWD/mlflow_data
+export MLFLOW_TRACKING_URI=http://localhost:8002
 
-mlflow server --backend-store-uri postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$MLFLOW_POSTGRES_DB --default-artifact-root $MLFLOW_ARTIFACTS_PATH -h 0.0.0.0 -p 8002
+#mlflow server --backend-store-uri postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$MLFLOW_POSTGRES_DB --default-artifact-root $MLFLOW_ARTIFACTS_PATH -h 0.0.0.0 -p 8002
+mlflow server --default-artifact-root $MLFLOW_ARTIFACTS_PATH -h 0.0.0.0 -p 8002

@@ -8,8 +8,6 @@ movies_categories_columns = [
     'Fantasy', 'Film-Noir', 'Horror', 'Musical', 'Mystery',
     'Romance', 'Sci-Fi', 'Thriller', 'War', 'Western']
 
-
-
 @asset(
     freshness_policy=FreshnessPolicy(maximum_lag_minutes=5),
     # group_name='csv_data',
@@ -36,11 +34,13 @@ def movies(context) -> Output[pd.DataFrame]:
     # io_manager_key="parquet_io_manager",
     # partitions_def=hourly_partitions,
     # key_prefix=["s3", "core"],
-    # config_schema={
-    #     'uri': String
-    # }
+    freshness_policy=FreshnessPolicy(maximum_lag_minutes=5),
+    config_schema={
+        'uri': String
+    }
 )
 def users() -> Output[pd.DataFrame]:
+    # uri = context.op_config["uri"]
     uri = 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/usuarios_0.csv'
     result = pd.read_csv(uri)
     return Output(
@@ -51,18 +51,27 @@ def users() -> Output[pd.DataFrame]:
         },
     )
 
+# Total rows
+# 25000
+# scores_mean
+# 3.6736
+# scores_std
+# 1.1046048370679187
 
+# 2025-03-02 21:40:06 -0300 - dagster - WARNING - /Users/hordia/dev/MLOps-itba/recommender_system_dagster/recommender_system/assets/recommender/train_model.py:55: BetaWarning: Parameter `resource_defs` of function `asset` is currently in beta, and may have breaking changes in minor version releases, with behavior changes in patch releases.
 @asset(
-    resource_defs={'mlflow': mlflow_tracking}
+    freshness_policy=FreshnessPolicy(maximum_lag_minutes=5),
+    resource_defs={'mlflow': mlflow_tracking},
     # io_manager_key="parquet_io_manager",
     # partitions_def=hourly_partitions,
     # key_prefix=["s3", "core"],
-    # config_schema={
-    #     'uri': String
-    # }
+    config_schema={
+        'uri': String
+    }
 )
 def scores(context) -> Output[pd.DataFrame]:
     mlflow = context.resources.mlflow
+    # uri = context.op_config["uri"]
     uri = 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/scores_0.csv'
     result = pd.read_csv(uri)
     metrics = {
@@ -82,15 +91,15 @@ def scores(context) -> Output[pd.DataFrame]:
 @asset(ins={
     "scores": AssetIn(
         # key_prefix=["snowflake", "core"],
-        # metadata={"columns": ["id"]}
+        metadata={"columns": ["id"]}
     ),
     "movies": AssetIn(
         # key_prefix=["snowflake", "core"],
-        # metadata={"columns": ["id"]}
+        metadata={"columns": ["id"]}
     ),
     "users": AssetIn(
         # key_prefix=["snowflake", "core"],
-        # metadata={"columns": ["id", "user_id", "parent"]}
+        metadata={"columns": ["id", "user_id", "parent"]}
     ),
 })
 def training_data(users: pd.DataFrame, movies: pd.DataFrame, scores: pd.DataFrame) -> Output[pd.DataFrame]:

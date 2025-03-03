@@ -1,2 +1,13 @@
 export DAGSTER_HOME=$PWD/dagster_home
+
+#DAGSTER_HOME=$REPO_FOLDER/dagster_home
+MLFLOW_TRACKING_URI=http://localhost:8002
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=mysecretpassword
+POSTGRES_HOST=localhost:5432
+MLFLOW_POSTGRES_DB=mlflow_db
+#MLFLOW_ARTIFACTS_PATH=$REPO_FOLDER/mlflow_data
+MLFLOW_ARTIFACTS_PATH=$PWD/mlflow_data
+AIRBYTE_PASSWORD=1TY8gsvfOToqLwxowQovdNdtteEPkAxj
+
 dagster dev

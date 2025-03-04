@@ -3,7 +3,8 @@ from dagster_dbt import dbt_assets, DbtCliResource, DbtProject
 from dagster import EnvVar, AssetExecutionContext
 from pathlib import Path
 
-#FIXME: update this path using an environment variable
+#DBT: https://github.com/dagster-io/dagster/blob/master/examples/assets_modern_data_stack/assets_modern_data_stack/assets/forecasting.py
+#FIXME: update this path using an environment variable (using .env and EnvVar)
 DBT_PROJECT_DIR = Path("/Users/hordia/dev/MLOps-itba/dbt_mlops")
 # DBT_PROFILES_DIR = Path("/Users/hordia/dev/MLOps-itba/dbt_mlops")
 dbt_resource = DbtCliResource(project_dir=DBT_PROJECT_DIR)

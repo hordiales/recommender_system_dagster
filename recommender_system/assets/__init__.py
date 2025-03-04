@@ -1,7 +1,7 @@
 from dagster import load_assets_from_package_module
 from . import core
 from . import recommender
-from . import airbyte
+# from . import airbyte
 
 core_assets = load_assets_from_package_module(
     package_module=core, group_name='core',

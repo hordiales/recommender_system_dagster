@@ -1,3 +1,4 @@
+.env
 dagster_home/
 mlruns/
 poetry.lock

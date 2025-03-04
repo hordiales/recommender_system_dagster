@@ -1,0 +1,13 @@
+dbt_mlops:
+  outputs:
+    dev:
+      dbname: mlflow_db
+      # dbname: mlops
+      host: localhost
+      pass: airbyte
+      port: 5432
+      schema: target
+      threads: 1
+      type: postgres
+      user: hordiales@gmail.com
+  target: dev

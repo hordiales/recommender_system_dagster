@@ -10,9 +10,22 @@ First, install your Dagster code location as a Python package. By using the --ed
 pip install -e ".[dev]"
 ```
 
-mkdir dagster_home
-export DAGSTER_HOME=$PWD/dagster_home
+## Define .env file
 
+(in .gitignpore for security reasons)
+
+DAGSTER_HOME=
+MLFLOW_TRACKING_URI=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_HOST=
+MLFLOW_POSTGRES_DB=
+MLFLOW_ARTIFACTS_PATH=
+AIRBYTE_PASSWORD=
+DBT_MANIFEST_PATH=
+DBT_PROJECT_PATH=
+
+## Dagster UI
 Then, start the Dagster UI web server:
 
 ```bash

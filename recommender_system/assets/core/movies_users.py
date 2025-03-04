@@ -88,26 +88,93 @@ def pre_scores(context) -> Output[pd.DataFrame]:
         metadata=metrics,
     )
 
-@asset(ins={
-    "pre_scores": AssetIn(
-        # key_prefix=["snowflake", "core"],
-        metadata={"columns": ["id"]}
-    ),
-    "pre_movies": AssetIn(
-        # key_prefix=["snowflake", "core"],
-        metadata={"columns": ["id"]}
-    ),
-    "pre_users": AssetIn(
-        # key_prefix=["snowflake", "core"],
-        metadata={"columns": ["id", "user_id", "parent"]}
-    ),
-})
-def training_data(pre_users: pd.DataFrame, pre_movies: pd.DataFrame, pre_scores: pd.DataFrame) -> Output[pd.DataFrame]:
-    scores_users = pd.merge(pre_scores, pre_users, left_on='user_id', right_on='id')
-    all_joined = pd.merge(scores_users, pre_movies, left_on='movie_id', right_on='id')
+# @asset(ins={
+#     "pre_scores": AssetIn(
+#         # key_prefix=["snowflake", "core"],
+#         metadata={"columns": ["id"]}
+#     ),
+#     "pre_movies": AssetIn(
+#         # key_prefix=["snowflake", "core"],
+#         metadata={"columns": ["id"]}
+#     ),
+#     "pre_users": AssetIn(
+#         # key_prefix=["snowflake", "core"],
+#         metadata={"columns": ["id", "user_id", "parent"]}
+#     ),
+# })
+# def training_data(pre_users: pd.DataFrame, pre_movies: pd.DataFrame, pre_scores: pd.DataFrame) -> Output[pd.DataFrame]:
+#     scores_users = pd.merge(pre_scores, pre_users, left_on='user_id', right_on='id')
+#     all_joined = pd.merge(scores_users, pre_movies, left_on='movie_id', right_on='id')
+
+#     return Output(
+#         all_joined,
+#         metadata={
+#             "Total rows": len(all_joined)
+#         },
+#     )
+
+import os
+from sqlalchemy import create_engine
+
+DB_CONFIG = {
+    "host": os.getenv("POSTGRES_HOST", "localhost"),
+    "database": os.getenv("MLFLOW_POSTGRES_DB", "mlops"),
+    "user": os.getenv("POSTGRES_USER"),
+    "password": os.getenv("POSTGRES_PASSWORD"),
+    "schema": os.getenv("MLFLOW_POSTGRES_SCHEMA", "public")
+}
+
+def get_postgres_connection():
+    return create_engine(
+        f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}/{DB_CONFIG['database']}"
+    )
+
+#NEW trainning data, retrieving data from PSQL instead of csv files
+@asset(
+    ins={
+        "scores_movies_users": AssetIn()
+        # "scores": AssetIn(
+        #     key_prefix=["dbt"],
+        #     metadata={"columns": ["id"]}
+        # ),
+        # "movies": AssetIn(
+        #     key_prefix=["dbt"],
+        #     metadata={"columns": ["id"]}
+        # ),
+        # "users": AssetIn(
+        #     key_prefix=["dbt"],
+        #     metadata={"columns": ["id", "user_id", "parent"]}
+        # ),
+    }
+)
+# def sql_training_data() -> Output[pd.DataFrame]:
+# @asset(ins={
+#     "pre_scores": AssetIn(
+#         # key_prefix=["snowflake", "core"],
+#         metadata={"columns": ["id"]}
+#     ),
+#     "pre_movies": AssetIn(
+#         # key_prefix=["snowflake", "core"],
+#         metadata={"columns": ["id"]}
+#     ),
+#     "pre_users": AssetIn(
+#         # key_prefix=["snowflake", "core"],
+#         metadata={"columns": ["id", "user_id", "parent"]}
+#     ),
+# })
+# def training_data(pre_users: pd.DataFrame, pre_movies: pd.DataFrame, pre_scores: pd.DataFrame) -> Output[pd.DataFrame]:
+def training_data(scores_movies_users) -> Output[pd.DataFrame]:
+    engine = get_postgres_connection()
+    
+    users_df = pd.read_sql("SELECT * FROM target.user", engine)
+    movies_df = pd.read_sql("SELECT * FROM target.movies", engine)
+    scores_df = pd.read_sql("SELECT * FROM target.scores", engine)
+
+    scores_users = pd.merge(scores_df, users_df, on='user_id')
+    all_joined = pd.merge(scores_users, movies_df, on='movie_id')
 
     return Output(
-        all_joined,
+        all_joined, 
         metadata={
             "Total rows": len(all_joined)
         },

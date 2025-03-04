@@ -13,10 +13,7 @@ from recommender_system.assets.dbt import dbt_models, dbt_resource, dbt_assets
 from dagster import EnvVar
 from dagster_airbyte import AirbyteResource, load_assets_from_airbyte_instance
 
-# all_assets = load_assets_from_modules([movies_users])
-# all_assets = [*core_assets, *recommender_assets]
-# all_assets = [*core_assets, *recommender_assets, *airbyte_assets]
-#all_assets = [*recommender_assets, *airbyte_assets, dbt_models]
+# from recommender_system.assets.recommender.train_model import sql_training_data #ya es un recommender asset
 all_assets = [*core_assets, *recommender_assets, *airbyte_assets, dbt_models]
 
 mlflow_resources = {
@@ -27,27 +24,21 @@ mlflow_resources = {
     },
 }
 
+# previous config for data origin
 data_job = define_asset_job(
     name='get_data',
     selection=['pre_movies', 'pre_users', 'pre_scores', 'training_data'],
     config=job_data_config
 )
 
+#ya es un recommender asset
+# sql_data_job = define_asset_job(
+#     name='sql_get_data',
+#     selection=['sql_training_data'],
+#     config=job_data_config
+# )
 
-from dagster import fs_io_manager
-# job_airbyte_config = {
-#     'resources': {
-#         "airbyte": airbyte_resource,
-#         "io_manager": fs_io_manager, 
-#         # **mlflow_resources
-#         #,
-#         # **airbyte_resources,  # Agregar Airbyte como recurso
-#     },
-#     'ops': { 
-#         # "airbyte": airbyte_resource,
-#         # "io_manager": fs_io_manager, 
-#     }
-# }
+# from dagster import fs_io_manager
 
 airbye_job = define_asset_job(
     name="airbye_job",
@@ -72,7 +63,7 @@ dbt_job = define_asset_job(
 
 recommender_job = define_asset_job(
     name="only_training",
-    # selection=['preprocessed_training_data', 'user2Idx', 'movie2Idx'],
+    # selection=['sql_training_data','preprocessed_training_data', 'user2Idx', 'movie2Idx'],
     selection=AssetSelection.groups('recommender'),
     config=job_training_config
 )
@@ -81,10 +72,11 @@ defs = Definitions(
     assets=all_assets,
     jobs=[
         data_job,
+        # sql_data_job, #ya es un recommender asset
         recommender_job,
         airbye_job,
         dbt_job
-        # airbyte_dbt_job 
+        # airbyte_dbt_job #pipeline test
     ],
     resources={  
         # "airbyte": airbyte_resource, 

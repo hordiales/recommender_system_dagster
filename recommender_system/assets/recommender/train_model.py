@@ -1,10 +1,60 @@
-from dagster import asset, AssetIn, Int, Float, multi_asset, AssetOut
+from dagster import asset, Output, AssetIn, Int, Float, multi_asset, AssetOut
 import pandas as pd
 from dagster_mlflow import mlflow_tracking
 from sklearn.model_selection import train_test_split
+# from sqlalchemy import create_engine
+# import os
+
+# DB_CONFIG = {
+#     "host": os.getenv("POSTGRES_HOST", "localhost"),
+#     "database": os.getenv("MLFLOW_POSTGRES_DB", "mlops"),
+#     "user": os.getenv("POSTGRES_USER"),
+#     "password": os.getenv("POSTGRES_PASSWORD"),
+#     "schema": os.getenv("MLFLOW_POSTGRES_SCHEMA", "public")
+# }
+
+# def get_postgres_connection():
+#     return create_engine(
+#         f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}/{DB_CONFIG['database']}"
+#     )
+
+# @asset(
+#     # ins={
+#     #     "scores": AssetIn(
+#     #         key_prefix=["dbt"],
+#     #         metadata={"columns": ["id"]}
+#     #     ),
+#     #     "movies": AssetIn(
+#     #         key_prefix=["dbt"],
+#     #         metadata={"columns": ["id"]}
+#     #     ),
+#     #     "users": AssetIn(
+#     #         key_prefix=["dbt"],
+#     #         metadata={"columns": ["id", "user_id", "parent"]}
+#     #     ),
+#     # }
+# )
+# def sql_training_data() -> Output[pd.DataFrame]:
+
+#     engine = get_postgres_connection()
+    
+#     users_df = pd.read_sql("SELECT * FROM target.user", engine)
+#     movies_df = pd.read_sql("SELECT * FROM target.movies", engine)
+#     scores_df = pd.read_sql("SELECT * FROM target.scores", engine)
+
+#     scores_users = pd.merge(scores_df, users_df, on='user_id')
+#     all_joined = pd.merge(scores_users, movies_df, on='movie_id')
+
+#     return Output(
+#         all_joined, 
+#         metadata={
+#             "Total rows": len(all_joined)
+#         },
+#     )
 
 @multi_asset(
     ins={
+        # "sql_training_data": AssetIn(
         "training_data": AssetIn(
         # key_prefix=["snowflake", "core"],
         # metadata={"columns": ["id"]}

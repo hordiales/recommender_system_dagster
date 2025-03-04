@@ -23,6 +23,7 @@ dbt_parse_invocation = dbt_resource.cli(["parse"]).wait()
 # lee manifest.json extrae assets y los carga en el contexto (scores_movies_users, etc)
 @dbt_assets(manifest=DBT_PROJECT_DIR/"target/manifest.json")
 def dbt_models(context: AssetExecutionContext, dbt: DbtCliResource):
-    # yield from dbt.cli(["build"], context=context).stream()
-    yield from dbt.cli(["dev"], context=context).stream()
+    yield from dbt.cli(["build"], context=context).stream() #works
+    # yield from dbt.cli(["dev"] , context=context).stream() #does not work
+    # yield from dbt.cli(["dev"]).stream()
     

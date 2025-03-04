@@ -131,6 +131,7 @@ def get_postgres_connection():
 
 # assets available         ["airbyte", "users"], ["user"]
 #NEW trainning data, retrieving data from PSQL instead of csv files
+# va con deps= y no AssetIn porque eso es para recibir binarios por argumento!
 @asset(
     deps=["scores_movies_users"],
     # ins={
@@ -171,13 +172,14 @@ def get_postgres_connection():
 def training_data() -> Output[pd.DataFrame]:
     engine = get_postgres_connection()
     
-    users_df = pd.read_sql("SELECT * FROM target.user", engine)
-    movies_df = pd.read_sql("SELECT * FROM target.movies", engine)
-    scores_df = pd.read_sql("SELECT * FROM target.scores", engine)
+    # users_df = pd.read_sql("SELECT * FROM target.user", engine)
+    # movies_df = pd.read_sql("SELECT * FROM target.movies", engine)
+    # scores_df = pd.read_sql("SELECT * FROM target.scores", engine)
 
-    scores_users = pd.merge(scores_df, users_df, on='user_id')
-    all_joined = pd.merge(scores_users, movies_df, on='movie_id')
+    # scores_users = pd.merge(scores_df, users_df, on='user_id')
+    # all_joined = pd.merge(scores_users, movies_df, on='movie_id')
 
+    all_joined = pd.read_sql("SELECT * FROM target.scores_movies_users", engine)
     return Output(
         all_joined, 
         metadata={

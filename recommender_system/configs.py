@@ -7,17 +7,17 @@ mlflow_resources = {
 }
 
 data_ops_config = {
-    'movies': {
+    'pre_movies': {
         'config': {
             'uri': 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/peliculas_0.csv'
             }
     },
-    'scores': {
+    'pre_scores': {
         'config': {
             'uri': 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/scores_0.csv'
             }
     },
-    'users': {
+    'pre_users': {
         'config': {
             'uri': 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/usuarios_0.csv'
             }

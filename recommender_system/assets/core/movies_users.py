@@ -16,7 +16,7 @@ movies_categories_columns = [
         'uri': String
     },
 )
-def movies(context) -> Output[pd.DataFrame]:
+def pre_movies(context) -> Output[pd.DataFrame]:
     uri = context.op_config["uri"]
     result = pd.read_csv(uri)
     return Output(
@@ -39,7 +39,7 @@ def movies(context) -> Output[pd.DataFrame]:
         'uri': String
     }
 )
-def users() -> Output[pd.DataFrame]:
+def pre_users() -> Output[pd.DataFrame]:
     # uri = context.op_config["uri"]
     uri = 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/usuarios_0.csv'
     result = pd.read_csv(uri)
@@ -69,7 +69,7 @@ def users() -> Output[pd.DataFrame]:
         'uri': String
     }
 )
-def scores(context) -> Output[pd.DataFrame]:
+def pre_scores(context) -> Output[pd.DataFrame]:
     mlflow = context.resources.mlflow
     # uri = context.op_config["uri"]
     uri = 'https://raw.githubusercontent.com/mlops-itba/Datos-RS/main/data/scores_0.csv'
@@ -89,22 +89,22 @@ def scores(context) -> Output[pd.DataFrame]:
     )
 
 @asset(ins={
-    "scores": AssetIn(
+    "pre_scores": AssetIn(
         # key_prefix=["snowflake", "core"],
         metadata={"columns": ["id"]}
     ),
-    "movies": AssetIn(
+    "pre_movies": AssetIn(
         # key_prefix=["snowflake", "core"],
         metadata={"columns": ["id"]}
     ),
-    "users": AssetIn(
+    "pre_users": AssetIn(
         # key_prefix=["snowflake", "core"],
         metadata={"columns": ["id", "user_id", "parent"]}
     ),
 })
-def training_data(users: pd.DataFrame, movies: pd.DataFrame, scores: pd.DataFrame) -> Output[pd.DataFrame]:
-    scores_users = pd.merge(scores, users, left_on='user_id', right_on='id')
-    all_joined = pd.merge(scores_users, movies, left_on='movie_id', right_on='id')
+def training_data(pre_users: pd.DataFrame, pre_movies: pd.DataFrame, pre_scores: pd.DataFrame) -> Output[pd.DataFrame]:
+    scores_users = pd.merge(pre_scores, pre_users, left_on='user_id', right_on='id')
+    all_joined = pd.merge(scores_users, pre_movies, left_on='movie_id', right_on='id')
 
     return Output(
         all_joined,

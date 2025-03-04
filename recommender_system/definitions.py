@@ -3,7 +3,10 @@ from recommender_system.configs import job_data_config, job_training_config
 from recommender_system.assets import (
     core_assets, recommender_assets, airbyte_assets
 )
-# from recommender_system.assets.airbyte.dbt import dbt_models, dbt_resource
+# from recommender_system.assets.airbyte import airbyte_assets
+# from recommender_system.assets.core import core_assets
+# from recommender_system.assets.recommender import recommender_assets
+from recommender_system.assets.dbt import dbt_models, dbt_resource, dbt_assets
 
 from dagster import EnvVar
 from dagster_airbyte import AirbyteResource, load_assets_from_airbyte_instance
@@ -18,8 +21,9 @@ airbyte_resource = AirbyteResource(
 
 # all_assets = load_assets_from_modules([movies_users])
 # all_assets = [*core_assets, *recommender_assets]
-all_assets = [*core_assets, *recommender_assets, *airbyte_assets]
-# all_assets = [*recommender_assets, *airbyte_assets, dbt_models]
+# all_assets = [*core_assets, *recommender_assets, *airbyte_assets]
+#all_assets = [*recommender_assets, *airbyte_assets, dbt_models]
+all_assets = [*core_assets, *recommender_assets, *airbyte_assets, dbt_models]
 
 mlflow_resources = {
     'mlflow': {
@@ -31,7 +35,7 @@ mlflow_resources = {
 
 data_job = define_asset_job(
     name='get_data',
-    selection=['movies', 'users', 'scores', 'training_data'],
+    selection=['pre_movies', 'pre_users', 'pre_scores', 'training_data'],
     config=job_data_config
 )
 
@@ -58,10 +62,10 @@ airbye_job = define_asset_job(
     # config=job_airbyte_config
 )
 
-# dbt_job = define_asset_job(
-#     name="dbt_job",
-#     selection=AssetSelection.assets(dbt_models),
-# )
+dbt_job = define_asset_job(
+    name="dbt_job",
+    selection=AssetSelection.assets(dbt_models),
+)
 
 recommender_job = define_asset_job(
     name="only_training",
@@ -76,12 +80,12 @@ defs = Definitions(
         data_job,
         recommender_job,
         airbye_job,
-        # dbt_job
+        dbt_job
     ],
     resources={  
         "airbyte": airbyte_resource, 
         "io_manager": fs_io_manager,
-        # "dbt": dbt_resource,
+        "dbt": dbt_resource,
         # "db_io_manager": DbIOManager(**POSTGRES_CONFIG),
         # **job_data_config["resources"], #no agregar esto para no duplicar key
     }

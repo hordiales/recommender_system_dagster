@@ -3,9 +3,10 @@ version: 2
 sources:
   - name: recommmender_system_raw
     description: "machine learning raw tables"
-    database: mlops
-    # schema: source
-    schema: public
+    # database: mlops
+    database: mlflow_db
+    schema: source
+    # schema: public
     tables:
       # - name: ratings
       - name: scores

@@ -13,6 +13,7 @@ recommender_assets = load_assets_from_package_module(
 
 # airbyte_assets = load_assets_from_airbyte_instance(airbyte_resource)
 
-airbyte_assets = load_assets_from_package_module(
-    package_module=airbyte, group_name='airbyte'
-)
+# airbyte_assets = load_assets_from_package_module(
+#     package_module=airbyte, group_name='airbyte'
+# )
+# from airbyte import airbyte_assets

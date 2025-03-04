@@ -1,9 +1,11 @@
 from dagster import Definitions, load_assets_from_modules, define_asset_job, AssetSelection
 from recommender_system.configs import job_data_config, job_training_config
+
+
 from recommender_system.assets import (
-    core_assets, recommender_assets, airbyte_assets
+    core_assets, recommender_assets#, airbyte_assets
 )
-# from recommender_system.assets.airbyte import airbyte_assets
+from recommender_system.assets.airbyte.remote_movies_users import airbyte_assets, airbyte_resource
 # from recommender_system.assets.core import core_assets
 # from recommender_system.assets.recommender import recommender_assets
 from recommender_system.assets.dbt import dbt_models, dbt_resource, dbt_assets
@@ -12,12 +14,12 @@ from dagster import EnvVar
 from dagster_airbyte import AirbyteResource, load_assets_from_airbyte_instance
 
 # Definir el recurso de Airbyte
-airbyte_resource = AirbyteResource(
-    host="localhost",
-    port="8000",
-    username="hordiales@gmail.com",
-    password=EnvVar("AIRBYTE_PASSWORD")
-)
+# airbyte_resource = AirbyteResource(
+#     host="localhost",
+#     port="8000",
+#     username="hordiales@gmail.com",
+#     password=EnvVar("AIRBYTE_PASSWORD")
+# )
 
 # all_assets = load_assets_from_modules([movies_users])
 # all_assets = [*core_assets, *recommender_assets]
@@ -67,6 +69,15 @@ dbt_job = define_asset_job(
     selection=AssetSelection.assets(dbt_models),
 )
 
+# from dagster import graph, job
+
+# @graph
+# def airbyte_dbt_pipeline():
+#     airbye_job()
+#     dbt_job()
+
+# airbyte_dbt_job = airbyte_dbt_pipeline.to_job()
+
 recommender_job = define_asset_job(
     name="only_training",
     # selection=['preprocessed_training_data', 'user2Idx', 'movie2Idx'],
@@ -81,6 +92,7 @@ defs = Definitions(
         recommender_job,
         airbye_job,
         dbt_job
+        # airbyte_dbt_job 
     ],
     resources={  
         "airbyte": airbyte_resource, 

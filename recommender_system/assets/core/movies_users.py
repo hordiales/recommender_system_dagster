@@ -129,23 +129,25 @@ def get_postgres_connection():
         f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}/{DB_CONFIG['database']}"
     )
 
+# assets available         ["airbyte", "users"], ["user"]
 #NEW trainning data, retrieving data from PSQL instead of csv files
 @asset(
-    ins={
-        "scores_movies_users": AssetIn()
-        # "scores": AssetIn(
-        #     key_prefix=["dbt"],
-        #     metadata={"columns": ["id"]}
-        # ),
-        # "movies": AssetIn(
-        #     key_prefix=["dbt"],
-        #     metadata={"columns": ["id"]}
-        # ),
-        # "users": AssetIn(
-        #     key_prefix=["dbt"],
-        #     metadata={"columns": ["id", "user_id", "parent"]}
-        # ),
-    }
+    deps=["scores_movies_users"],
+    # ins={
+    #     # "scores_movies_users": AssetIn()
+    #     "scores": AssetIn(
+    #         # key_prefix=["dbt"],
+    #         # metadata={"columns": ["id"]}
+    #     ),
+    #     "movies": AssetIn(
+    #         # key_prefix=["dbt"],
+    #         # metadata={"columns": ["id"]}
+    #     ),
+    #     "user": AssetIn(
+    #         # key_prefix=["dbt"],
+    #         # metadata={"columns": ["id", "user_id", "parent"]}
+    #     ),
+    # }
 )
 # def sql_training_data() -> Output[pd.DataFrame]:
 # @asset(ins={
@@ -163,7 +165,10 @@ def get_postgres_connection():
 #     ),
 # })
 # def training_data(pre_users: pd.DataFrame, pre_movies: pd.DataFrame, pre_scores: pd.DataFrame) -> Output[pd.DataFrame]:
-def training_data(scores_movies_users) -> Output[pd.DataFrame]:
+# def training_data(scores_movies_users) -> Output[pd.DataFrame]:
+# def training_data(scores,movies,user) -> Output[pd.DataFrame]:
+# WARNING: no son assets binarios en disco
+def training_data() -> Output[pd.DataFrame]:
     engine = get_postgres_connection()
     
     users_df = pd.read_sql("SELECT * FROM target.user", engine)
